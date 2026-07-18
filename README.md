@@ -6,7 +6,7 @@
 - **Integrante 2:** [Nombre] - Arquitectura, navegación y estructura del frontend.
 - **Integrante 3:** [Nombre] - Componentes, formularios y diseño de interfaz.
 - **Integrante 4:** De La Cruz Panduro Rai Caleb - Servicios REST y desarrollo del backend.
-- **Integrante 5:** [Nombre] - Pruebas, validaciones, documentación y control de calidad.
+- **Integrante 5:** Conislla Lavado Cesar Jesus - Pruebas, validaciones, documentación y control de calidad.
 
 ---
 
