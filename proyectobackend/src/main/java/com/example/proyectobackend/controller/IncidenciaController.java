@@ -5,20 +5,25 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.proyectobackend.dto.IncidenciaRequestDTO;
+import com.example.proyectobackend.dto.IncidenciaResponseDTO;
 import com.example.proyectobackend.models.Incidencia;
 import com.example.proyectobackend.repository.IncidenciaRepository;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/incidencias")
@@ -28,64 +33,100 @@ public class IncidenciaController {
     @Autowired
     private IncidenciaRepository incidenciaRepository;
 
+    // ---------- CREAR ----------
     @PostMapping
-    public Incidencia RegistrarIncidencia(@RequestBody Incidencia nuevaIncidencia) {        
-        return incidenciaRepository.save(nuevaIncidencia);
+    public ResponseEntity<IncidenciaResponseDTO> registrarIncidencia(@Valid @RequestBody IncidenciaRequestDTO dto) {
+        Incidencia nuevaIncidencia = new Incidencia();
+        nuevaIncidencia.setCodigo(dto.getCodigo());
+        nuevaIncidencia.setTitulo(dto.getTitulo());
+        nuevaIncidencia.setDescripcion(dto.getDescripcion());
+        nuevaIncidencia.setAreaSolicitante(dto.getAreaSolicitante());
+        nuevaIncidencia.setPrioridad(dto.getPrioridad());
+        nuevaIncidencia.setEstado(dto.getEstado());
+
+        Incidencia guardada = incidenciaRepository.save(nuevaIncidencia);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(mapearADTO(guardada));
     }
-    
+
+    // ---------- LISTAR TODAS ----------
     @GetMapping
-    public List<Incidencia> listarIncidencias() {
-        return incidenciaRepository.findAll();
+    public List<IncidenciaResponseDTO> listarIncidencias() {
+        return incidenciaRepository.findAll()
+                .stream()
+                .map(this::mapearADTO)
+                .toList();
     }
 
+    // ---------- BUSCAR POR TÍTULO ----------
     @GetMapping("/buscar")
-    public List<Incidencia> buscarPorTitulo(@RequestParam String titulo) {
-        return incidenciaRepository.findByTituloContainingIgnoreCase(titulo);
+    public List<IncidenciaResponseDTO> buscarPorTitulo(@RequestParam String titulo) {
+        return incidenciaRepository.findByTituloContainingIgnoreCase(titulo)
+                .stream()
+                .map(this::mapearADTO)
+                .toList();
     }
 
-
+    // ---------- FILTRAR POR PRIORIDAD Y ESTADO ----------
     @GetMapping("/filtrar")
-    public List<Incidencia> filtrarPorPrioridadYEstado(
-            @RequestParam String prioridad, 
+    public List<IncidenciaResponseDTO> filtrarPorPrioridadYEstado(
+            @RequestParam String prioridad,
             @RequestParam String estado) {
-        return incidenciaRepository.findByPrioridadAndEstado(prioridad, estado);
+        return incidenciaRepository.findByPrioridadAndEstado(prioridad, estado)
+                .stream()
+                .map(this::mapearADTO)
+                .toList();
     }
 
+    // ---------- ACTUALIZAR ----------
     @PutMapping("/{id}")
-    public Incidencia actualizarIncidencia(@PathVariable Long id, @RequestBody Incidencia incidenciaActualizada) {
-       
+    public ResponseEntity<IncidenciaResponseDTO> actualizarIncidencia(
+            @PathVariable Long id,
+            @Valid @RequestBody IncidenciaRequestDTO dto) {
+
         Incidencia incidenciaExistente = incidenciaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Error: Incidencia no encontrada con el ID: " + id));
 
-       
-        incidenciaExistente.setTitulo(incidenciaActualizada.getTitulo());
-        incidenciaExistente.setDescripcion(incidenciaActualizada.getDescripcion());
-        incidenciaExistente.setAreaSolicitante(incidenciaActualizada.getAreaSolicitante());
-        incidenciaExistente.setPrioridad(incidenciaActualizada.getPrioridad());
-        incidenciaExistente.setEstado(incidenciaActualizada.getEstado());
+        incidenciaExistente.setCodigo(dto.getCodigo());
+        incidenciaExistente.setTitulo(dto.getTitulo());
+        incidenciaExistente.setDescripcion(dto.getDescripcion());
+        incidenciaExistente.setAreaSolicitante(dto.getAreaSolicitante());
+        incidenciaExistente.setPrioridad(dto.getPrioridad());
+        incidenciaExistente.setEstado(dto.getEstado());
 
-        // Guardamos y devolvemos la incidencia actualizada
-        return incidenciaRepository.save(incidenciaExistente);
+        Incidencia actualizada = incidenciaRepository.save(incidenciaExistente);
+
+        return ResponseEntity.ok(mapearADTO(actualizada));
     }
 
+    // ---------- ELIMINAR ----------
     @DeleteMapping("/{id}")
-    public String eliminarIncidencia(@PathVariable Long id) {
+    public ResponseEntity<String> eliminarIncidencia(@PathVariable Long id) {
+        if (!incidenciaRepository.existsById(id)) {
+            throw new RuntimeException("Error: Incidencia no encontrada con el ID: " + id);
+        }
         incidenciaRepository.deleteById(id);
-        return "Incidencia eliminada correctamente";
+        return ResponseEntity.ok("Incidencia eliminada correctamente");
     }
 
-    //me olvide falto esto
+    // ---------- RESUMEN ----------
     @GetMapping("/resumen")
     public Map<String, Object> obtenerResumen() {
         Map<String, Object> resumen = new HashMap<>();
-        
-        resumen.put("total", incidenciaRepository.count()); 
-        
-        // Usamos la función que acabamos de crear en el repositorio
+
+        resumen.put("total", incidenciaRepository.count());
         resumen.put("Pendiente", incidenciaRepository.countByEstado("Pendiente"));
         resumen.put("En proceso", incidenciaRepository.countByEstado("En proceso"));
         resumen.put("Resuelto", incidenciaRepository.countByEstado("Resuelto"));
-        
+
         return resumen;
-    }   
+    }
+
+    // ---------- MÉTODO PRIVADO DE CONVERSIÓN ----------
+    private IncidenciaResponseDTO mapearADTO(Incidencia i) {
+        return new IncidenciaResponseDTO(
+                i.getId(), i.getCodigo(), i.getTitulo(), i.getDescripcion(),
+                i.getAreaSolicitante(), i.getPrioridad(), i.getEstado(), i.getFechaRegistro()
+        );
+    }
 }
