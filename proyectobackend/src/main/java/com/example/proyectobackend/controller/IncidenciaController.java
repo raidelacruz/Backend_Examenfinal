@@ -79,7 +79,6 @@ public class IncidenciaController {
     public Map<String, Object> obtenerResumen() {
         Map<String, Object> resumen = new HashMap<>();
         
-        // .count() es otro regalo automático de JpaRepository
         resumen.put("total", incidenciaRepository.count()); 
         
         // Usamos la función que acabamos de crear en el repositorio
