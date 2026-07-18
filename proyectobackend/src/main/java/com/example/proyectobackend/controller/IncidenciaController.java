@@ -87,4 +87,5 @@ public class IncidenciaController {
         resumen.put("Resuelto", incidenciaRepository.countByEstado("Resuelto"));
         
         return resumen;
+    }   
 }
