@@ -1,6 +1,8 @@
 package com.example.proyectobackend.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -71,4 +73,19 @@ public class IncidenciaController {
         incidenciaRepository.deleteById(id);
         return "Incidencia eliminada correctamente";
     }
+
+    //me olvide falto esto
+    @GetMapping("/resumen")
+    public Map<String, Object> obtenerResumen() {
+        Map<String, Object> resumen = new HashMap<>();
+        
+        // .count() es otro regalo automático de JpaRepository
+        resumen.put("total", incidenciaRepository.count()); 
+        
+        // Usamos la función que acabamos de crear en el repositorio
+        resumen.put("Pendiente", incidenciaRepository.countByEstado("Pendiente"));
+        resumen.put("En proceso", incidenciaRepository.countByEstado("En proceso"));
+        resumen.put("Resuelto", incidenciaRepository.countByEstado("Resuelto"));
+        
+        return resumen;
 }
