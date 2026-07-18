@@ -17,6 +17,7 @@ public class Incidencia {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String codigo;
     private String titulo;
     private String descripcion;
     private String areaSolicitante;
