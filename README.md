@@ -2,9 +2,9 @@
 
 ## 👥 Integrantes y Distribución de Responsabilidades
 
-- **Integrante 1:** [Nombre] - Coordinación general y administración del repositorio.
-- **Integrante 2:** [Nombre] - Arquitectura, navegación y estructura del frontend.
-- **Integrante 3:** [Nombre] - Componentes, formularios y diseño de interfaz.
+- **Integrante 1:** De La Cruz Panduro Rai Caleb - Coordinación general y administración del repositorio.
+- **Integrante 2:** Bedia Castillo Jhon Antonio - Arquitectura, navegación y estructura del frontend.
+- **Integrante 3:** Garcia Muñoz Leonardo Adrian - Componentes, formularios y diseño de interfaz.
 - **Integrante 4:** De La Cruz Panduro Rai Caleb - Servicios REST y desarrollo del backend.
 - **Integrante 5:** Conislla Lavado Cesar Jesus - Pruebas, validaciones, documentación y control de calidad.
 
@@ -48,5 +48,4 @@ Para que el servidor funcione correctamente, es necesario crear una base de dato
 Una vez que el servidor esté corriendo, la API REST estará disponible en la ruta base:
 `http://localhost:8080/api/incidencias`
 
-Para visualizar y probar todas las rutas interactivamente (GET, POST, PUT, DELETE), puedes acceder a la interfaz gráfica de Swagger en tu navegador:
-👉 `http://localhost:8080/swagger-ui.html`
+Para visualizar y probar todas las rutas interactivamente (GET, POST, PUT, DELETE), puedes acceder a la interfaz gráfica de Swagger en tu navegador: `http://localhost:8080/swagger-ui.html`
